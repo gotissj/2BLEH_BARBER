@@ -32,7 +32,7 @@
 						WhatsApp
 					</a>
 					<a
-						href="https://instagram.com/"
+						href="https://www.instagram.com/_2bleh_barber"
 						target="_blank"
 						rel="noopener noreferrer"
 						class="btn w-full btn-lg btn-outline"

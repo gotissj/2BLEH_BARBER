@@ -23,6 +23,24 @@
 			{/if}
 		</p>
 
+		{#if data.resetSuccess}
+			<div class="alert alert-success mt-4" role="alert">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-5 w-5 shrink-0 stroke-current"
+					fill="none"
+					viewBox="0 0 24 24"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+				<span>Contraseña restablecida. Ya podés ingresar.</span>
+			</div>
+		{/if}
+
 		{#if form?.error}
 			<div class="mt-4 alert alert-error" role="alert">
 				<svg
@@ -35,7 +53,7 @@
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="2"
-						d="M10 14l2-2m0 0l2-2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2"
+						d="M10 14l2-2m0 0l2-2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2m-2 2l2 2"
 					/>
 				</svg>
 				<span>{form.error}</span>
@@ -70,6 +88,11 @@
 					class="input-bordered input w-full"
 					placeholder="••••••••"
 				/>
+				<div class="mt-1 text-right">
+					<a href={resolve('/forgot-password')} class="link link-primary text-xs"
+						>¿Olvidaste tu contraseña?</a
+					>
+				</div>
 			</div>
 			<button type="submit" class="btn mt-2 w-full btn-primary">Ingresar</button>
 		</form>

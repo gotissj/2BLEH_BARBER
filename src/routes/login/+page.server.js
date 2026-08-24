@@ -5,7 +5,10 @@ import { createSession, SESSION_COOKIE } from '$lib/server/auth/session';
 
 export const load = async ({ locals, url }) => {
 	if (locals.user) throw redirect(303, roleHome(locals.user.role));
-	return { panel: url.searchParams.get('panel') === '1' };
+	return {
+		panel: url.searchParams.get('panel') === '1',
+		resetSuccess: url.searchParams.get('reset') === 'success'
+	};
 };
 
 export const actions = {

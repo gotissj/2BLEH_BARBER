@@ -56,7 +56,7 @@
 							WhatsApp
 						</a>
 						<a
-							href="https://instagram.com/"
+							href="https://www.instagram.com/_2bleh_barber"
 							target="_blank"
 							rel="noopener noreferrer"
 							class="btn w-full btn-lg border-white bg-white text-neutral hover:bg-white/90"
@@ -117,9 +117,13 @@
 		</div>
 
 		{#if !isClient}
-<p class="text-center text-sm text-neutral-content/80">
+<p class="text-center text-sm text-neutral-content/90">
 			¿Trabajás en 2Bleh?
-			<a href={resolve('/login?panel=1')} class="link link-primary">Ingresá al panel</a>
+			<a
+				href={resolve('/login?panel=1')}
+				class="font-semibold text-white underline decoration-white/60 underline-offset-4 hover:text-white/80"
+				>Ingresá al panel</a
+			>
 		</p>
 		{/if}
 	</div>

@@ -17,9 +17,33 @@ export const actions = {
 		const data = await request.formData();
 		const id = data.get('id');
 		if (!id) return { error: 'ID requerido' };
-		await import('$lib/server/services/bookings').then((m) =>
+		const updated = await import('$lib/server/services/bookings').then((m) =>
 			m.updateBookingStatus(String(id), user.id, 'confirmada')
 		);
+
+		// Notificar al cliente que su turno fue confirmado (no bloqueante)
+		try {
+			const { getBooking } = await import('$lib/server/services/bookings');
+			const { getUser } = await import('$lib/server/services/users');
+			const { notifyClientBookingConfirmed } = await import('$lib/server/services/email');
+			const booking = await getBooking(String(id));
+			if (booking) {
+				const client = await getUser(booking.clientId);
+				if (client?.email) {
+					await notifyClientBookingConfirmed({
+						email: client.email,
+						clientName: client.name,
+						barberName: booking.barberName || user.name,
+						date: updated.date ?? booking.date,
+						time: updated.time ?? booking.time,
+						service: updated.service ?? booking.service
+					});
+				}
+			}
+		} catch (e) {
+			console.error('No se pudo notificar al cliente por email (confirmación)', e);
+		}
+
 		return { success: true };
 	},
 	cancelar: async ({ request, locals }) => {

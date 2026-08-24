@@ -1,6 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import { getUser, updateUser } from '$lib/server/services/users';
 import { verifyPassword, hashPassword } from '$lib/server/auth/password.js';
+import { deleteUserSessions } from '$lib/server/auth/session.js';
+import { SESSION_COOKIE } from '$lib/server/auth/session.js';
 
 export async function load({ locals }) {
 	if (!locals.user || locals.user.role !== 'barbero') throw redirect(303, '/login');
@@ -39,5 +41,40 @@ export const actions = {
 		}
 		await updateUser(locals.user.id, { passwordHash: hashPassword(String(nuevo)) });
 		return { success: true };
+	},
+	borrarCuenta: async ({ request, locals, cookies }) => {
+		if (!locals.user || locals.user.role !== 'barbero') return { error: 'No autenticado' };
+		const data = await request.formData();
+		const password = String(data.get('password') ?? '');
+		if (!password) return { error: 'Debes confirmar tu contraseña' };
+
+		const dbUser = await getUser(locals.user.id);
+		if (!dbUser || !verifyPassword(password, dbUser.passwordHash)) {
+			return { error: 'Contraseña incorrecta' };
+		}
+
+		const userId = locals.user.id;
+		try {
+			const { deleteBarberBookings, deleteClientBookings } = await import(
+				'$lib/server/services/bookings.js'
+			);
+			const { deleteAllBarberBlocks } = await import('$lib/server/services/admin.js');
+			const { deleteUserResetTokens } = await import('$lib/server/services/passwordReset.js');
+			const { deleteUser } = await import('$lib/server/services/users.js');
+
+			await deleteBarberBookings(userId);
+			// Por si el barbero también tiene reservas como cliente
+			await deleteClientBookings(userId);
+			await deleteAllBarberBlocks(userId);
+			await deleteUserResetTokens(userId);
+			await deleteUserSessions(userId);
+			await deleteUser(userId);
+		} catch (e) {
+			console.error('Error al borrar cuenta barbero', e);
+			return { error: 'No se pudo borrar la cuenta. Intentá de nuevo.' };
+		}
+
+		cookies.delete(SESSION_COOKIE, { path: '/' });
+		throw redirect(303, '/');
 	}
 };

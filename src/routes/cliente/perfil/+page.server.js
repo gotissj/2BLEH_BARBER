@@ -1,5 +1,8 @@
 import { getUser, updateUser } from '$lib/server/services/users';
 import { verifyPassword, hashPassword } from '$lib/server/auth/password.js';
+import { redirect } from '@sveltejs/kit';
+import { deleteUserSessions } from '$lib/server/auth/session.js';
+import { SESSION_COOKIE } from '$lib/server/auth/session.js';
 
 export async function load({ locals }) {
 	if (!locals.user) return { user: null };
@@ -37,5 +40,39 @@ export const actions = {
 			return { error: 'Contraseña actual incorrecta' };
 		await updateUser(locals.user.id, { passwordHash: hashPassword(String(nuevo)) });
 		return { success: true };
+	},
+	borrarCuenta: async ({ request, locals, cookies }) => {
+		if (!locals.user) return { error: 'No autenticado' };
+		const data = await request.formData();
+		const password = String(data.get('password') ?? '');
+		if (!password) return { error: 'Debes confirmar tu contraseña' };
+
+		const dbUser = await getUser(locals.user.id);
+		if (!dbUser || !verifyPassword(password, dbUser.passwordHash)) {
+			return { error: 'Contraseña incorrecta' };
+		}
+
+		// No permitir borrar cuenta admin desde aquí
+		if (dbUser.role === 'admin') {
+			return { error: 'La cuenta de administrador no puede borrarse desde el perfil' };
+		}
+
+		const userId = locals.user.id;
+		try {
+			const { deleteClientBookings } = await import('$lib/server/services/bookings.js');
+			const { deleteUserResetTokens } = await import('$lib/server/services/passwordReset.js');
+			const { deleteUser } = await import('$lib/server/services/users.js');
+
+			await deleteClientBookings(userId);
+			await deleteUserResetTokens(userId);
+			await deleteUserSessions(userId);
+			await deleteUser(userId);
+		} catch (e) {
+			console.error('Error al borrar cuenta cliente', e);
+			return { error: 'No se pudo borrar la cuenta. Intentá de nuevo.' };
+		}
+
+		cookies.delete(SESSION_COOKIE, { path: '/' });
+		throw redirect(303, '/');
 	}
 };

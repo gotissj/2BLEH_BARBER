@@ -12,11 +12,7 @@ export async function load({ url }) {
 }
 
 export const actions = {
-	eliminar: async ({ request }) => {
-		const data = await request.formData();
-		const id = data.get('id');
-		if (!id) return { error: 'ID requerido' };
-		await import('$lib/server/services/users').then((m) => m.deleteUser(String(id)));
-		return { success: true };
+	eliminar: async () => {
+		return { error: 'Acción no permitida: no se puede eliminar clientes desde el panel' };
 	}
 };

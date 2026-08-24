@@ -76,7 +76,7 @@
 						value={form?.phone ?? ''}
 						required
 						class="input-bordered input w-full"
-						placeholder="+595 000 000 000"
+						placeholder="0986744257"
 					/>
 				</div>
 				<div class="form-control">

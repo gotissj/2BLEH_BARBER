@@ -3,6 +3,10 @@
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui';
 
+@theme {
+	--font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
 :root {
 	--color-base-100: oklch(100% 0 0);
 	--color-base-200: oklch(97% 0 0);
@@ -61,6 +65,12 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
 		-webkit-appearance: none;
 		appearance: none;
 	}
+}
+
+/* Fuente global Poppins */
+html,
+body {
+	font-family: 'Poppins', sans-serif;
 }
 
 /* Subtle global animations */

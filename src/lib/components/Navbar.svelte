@@ -91,20 +91,22 @@
 						<ul
 							class="menu-compact menu dropdown-content mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-xl"
 						>
-							<li><span class="text-sm text-base-content/60">{user.email}</span></li>
-							<li><span class="text-sm text-base-content/60 capitalize">{user.role}</span></li>
+							<li><span class="text-sm text-base-content/60 justify-start">{user.email}</span></li>
+							<li><span class="text-sm text-base-content/60 capitalize justify-start">{user.role}</span></li>
 							{#if user.role === 'cliente'}
 								<li>
-									<a href={resolve('/cliente/perfil')} class="text-sm">Mi perfil</a>
+									<a href={resolve('/cliente/perfil')} class="text-sm justify-start">Mi perfil</a>
 								</li>
 							{:else if user.role === 'barbero'}
 								<li>
-									<a href={resolve('/barbero/perfil')} class="text-sm">Mi perfil</a>
+									<a href={resolve('/barbero/perfil')} class="text-sm justify-start">Mi perfil</a>
 								</li>
 							{/if}
 							<li>
-								<form method="POST" action={resolve('/logout')} class="w-full p-0">
-									<button type="submit" class="block h-full w-full text-left text-sm text-red-600"
+								<form method="POST" action={resolve('/logout')} class="contents">
+									<button
+										type="submit"
+										class="flex w-full justify-start px-3 py-1.5 text-left text-sm text-red-600 cursor-pointer"
 										>Cerrar sesion</button
 									>
 								</form>

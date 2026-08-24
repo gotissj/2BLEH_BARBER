@@ -62,6 +62,11 @@ export async function deleteAgendaBlock(id, barberId) {
 		.where(and(eq(agendaBlock.id, id), eq(agendaBlock.barberId, barberId)));
 }
 
+/** @param {string} barberId */
+export async function deleteAllBarberBlocks(barberId) {
+	await db.delete(agendaBlock).where(eq(agendaBlock.barberId, barberId));
+}
+
 /** Configuración del negocio */
 
 export async function getBusinessConfig() {

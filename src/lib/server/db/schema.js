@@ -30,6 +30,17 @@ export const session = sqliteTable('session', {
 		.$defaultFn(() => new Date())
 });
 
+export const passwordResetToken = sqliteTable('password_reset_token', {
+	token: text('token').primaryKey(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.notNull()
+		.$defaultFn(() => new Date())
+});
+
 export const service = sqliteTable('service', {
 	id: text('id')
 		.primaryKey()

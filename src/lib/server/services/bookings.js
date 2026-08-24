@@ -183,6 +183,11 @@ export async function deleteBarberBookings(barberId) {
 	await db.delete(booking).where(eq(booking.barberId, barberId));
 }
 
+/** @param {string} clientId */
+export async function deleteClientBookings(clientId) {
+	await db.delete(booking).where(eq(booking.clientId, clientId));
+}
+
 /** @param {string} id @param {string} userId @param {'pendiente'|'confirmada'|'cancelada'|'realizado'|'ausente'} newStatus */
 export async function updateBookingStatus(id, userId, newStatus) {
 	const [row] = await db

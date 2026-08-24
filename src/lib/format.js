@@ -2,7 +2,7 @@
 export function formatDate(iso) {
 	if (!iso) return '';
 	const [y, m, d] = iso.split('-').map(Number);
-	return new Date(y, m - 1, d).toLocaleDateString('es-AR', {
+	return new Date(y, m - 1, d).toLocaleDateString('es-PY', {
 		weekday: 'short',
 		day: 'numeric',
 		month: 'short'
