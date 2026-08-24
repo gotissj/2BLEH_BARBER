@@ -9,14 +9,9 @@
 	/** @type {{ open: boolean; message: string; form: HTMLFormElement | null }} */
 	let confirmation = $state({ open: false, message: '', form: null });
 
-	/** @param {SubmitEvent} event @param {string} message */
-	function askForConfirmation(event, message) {
-		const form = /** @type {HTMLFormElement} */ (event.currentTarget);
-		if (form.dataset.confirmed === 'true') {
-			delete form.dataset.confirmed;
-			return;
-		}
-		event.preventDefault();
+	/** @param {HTMLFormElement | null} form @param {string} message */
+	function askForConfirmation(form, message) {
+		if (!form) return;
 		confirmation = { open: true, message, form };
 	}
 
@@ -28,7 +23,6 @@
 		const form = confirmation.form;
 		cancelConfirmation();
 		if (form) {
-			form.dataset.confirmed = 'true';
 			form.requestSubmit();
 		}
 	}
@@ -206,18 +200,17 @@
 												></button
 											>
 										</form>
-										<form
-											method="POST"
-											action="?/cancelar"
-											use:enhance
-											onsubmit={(e) => askForConfirmation(e, '¿Cancelar turno?')}
-										>
+										<form method="POST" action="?/cancelar" use:enhance>
 											<input type="hidden" name="id" value={b.id} />
 											<button
-												type="submit"
+												type="button"
 												class="btn btn-circle btn-ghost btn-error btn-sm"
 												aria-label="Cancelar turno"
 												title="Cancelar"
+												onclick={(e) => {
+													const form = /** @type {HTMLElement} */ (e.currentTarget).closest('form');
+													askForConfirmation(/** @type {HTMLFormElement} */ (form), '¿Cancelar turno?');
+												}}
 												><svg
 													xmlns="http://www.w3.org/2000/svg"
 													class="h-4 w-4"
@@ -270,18 +263,17 @@
 												/></svg
 											></a
 										>
-										<form
-											method="POST"
-											action="?/cancelar"
-											use:enhance
-											onsubmit={(e) => askForConfirmation(e, '¿Cancelar turno confirmado?')}
-										>
+										<form method="POST" action="?/cancelar" use:enhance>
 											<input type="hidden" name="id" value={b.id} />
 											<button
-												type="submit"
+												type="button"
 												class="btn btn-circle btn-ghost btn-error btn-sm"
 												aria-label="Cancelar turno"
 												title="Cancelar"
+												onclick={(e) => {
+													const form = /** @type {HTMLElement} */ (e.currentTarget).closest('form');
+													askForConfirmation(/** @type {HTMLFormElement} */ (form), '¿Cancelar turno confirmado?');
+												}}
 												><svg
 													xmlns="http://www.w3.org/2000/svg"
 													class="h-4 w-4"
@@ -308,18 +300,17 @@
 							<td colspan="3" class="font-medium text-warning">BLOQUEADO</td>
 							<td><span class="badge badge-sm badge-warning">{b.reason ?? 'Sin motivo'}</span></td>
 							<td>
-								<form
-									method="POST"
-									action="?/eliminarBloqueo"
-									use:enhance
-									onsubmit={(e) => askForConfirmation(e, '¿Eliminar bloqueo?')}
-								>
+								<form method="POST" action="?/eliminarBloqueo" use:enhance>
 									<input type="hidden" name="id" value={b.id} />
 									<input type="hidden" name="barberId" value={b.barberId} />
 									<button
-										type="submit"
+										type="button"
 										class="btn btn-circle btn-ghost btn-error btn-sm"
 										aria-label="Eliminar bloqueo"
+										onclick={(e) => {
+											const form = /** @type {HTMLElement} */ (e.currentTarget).closest('form');
+											askForConfirmation(/** @type {HTMLFormElement} */ (form), '¿Eliminar bloqueo?');
+										}}
 										><svg
 											xmlns="http://www.w3.org/2000/svg"
 											class="h-4 w-4"

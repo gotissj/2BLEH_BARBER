@@ -109,7 +109,7 @@
 			</div>
 		</div>
 
-		{#if data.user?.id === b.clientId && (b.status === 'pendiente' || b.status === 'confirmada')}
+		{#if (data.user?.id === b.clientId || data.user?.id === b.barberId) && (b.status === 'pendiente' || b.status === 'confirmada')}
 			<div class="mt-4 space-y-3">
 				<form
 					method="POST"
@@ -129,7 +129,7 @@
 			</div>
 		{/if}
 
-		{#if showReagendar && data.user?.id === b.clientId && (b.status === 'pendiente' || b.status === 'confirmada')}
+		{#if showReagendar && (data.user?.id === b.clientId || data.user?.id === b.barberId) && (b.status === 'pendiente' || b.status === 'confirmada')}
 			<div class="card mt-4 border border-primary/30 bg-primary/10">
 				<div class="card-body">
 					<h3 class="card-title">Reagendar turno</h3>

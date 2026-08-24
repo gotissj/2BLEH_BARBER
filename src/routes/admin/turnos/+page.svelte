@@ -1,5 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
+	import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 
 	let { data } = $props();
 	const allBookings = $derived(data.bookings);
@@ -21,6 +22,31 @@
 
 	function changeDate() {
 		history.replaceState(null, '', `/admin/turnos?date=${date}&barberId=${barberId}`);
+	}
+
+	let deleteModalOpen = $state(false);
+	let pendingDeleteId = $state(/** @type {string | null} */ (null));
+	let deleteForm = $state(/** @type {HTMLFormElement | null} */ (null));
+
+	/** @param {string} id */
+	function askDelete(id) {
+		pendingDeleteId = id;
+		deleteModalOpen = true;
+	}
+
+	function cancelDelete() {
+		deleteModalOpen = false;
+		pendingDeleteId = null;
+	}
+
+	function confirmDelete() {
+		if (pendingDeleteId && deleteForm) {
+			const input = deleteForm.querySelector('input[name="id"]');
+			if (input) /** @type {HTMLInputElement} */ (input).value = pendingDeleteId;
+			deleteForm.requestSubmit();
+		}
+		deleteModalOpen = false;
+		pendingDeleteId = null;
 	}
 </script>
 
@@ -142,32 +168,25 @@
 											</form>
 										</td>
 										<td class="text-right">
-											<form
-												method="POST"
-												action="?/eliminar"
-												use:enhance
-												onsubmit={(e) => !confirm('Eliminar turno?') && e.preventDefault()}
+											<button
+												type="button"
+												class="btn btn-circle btn-ghost text-red-600 btn-sm"
+												aria-label="Eliminar turno"
+												onclick={() => askDelete(b.id)}
+												><svg
+													xmlns="http://www.w3.org/2000/svg"
+													class="h-4 w-4"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="currentColor"
+													><path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v12m-6 0h14m-6 0v-8m0 0V5a2 2 0 012-2h2a2 2 0 012 2v2m-6 0h10"
+													/></svg
+												></button
 											>
-												<input type="hidden" name="id" value={b.id} />
-												<button
-													type="submit"
-													class="btn btn-circle btn-ghost text-red-600 btn-sm"
-													aria-label="Eliminar turno"
-													><svg
-														xmlns="http://www.w3.org/2000/svg"
-														class="h-4 w-4"
-														fill="none"
-														viewBox="0 0 24 24"
-														stroke="currentColor"
-														><path
-															stroke-linecap="round"
-															stroke-linejoin="round"
-															stroke-width="2"
-															d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v12m-6 0h14m-6 0v-8m0 0V5a2 2 0 012-2h2a2 2 0 012 2v2m-6 0h10"
-														/></svg
-													></button
-												>
-											</form>
 										</td>
 									</tr>
 								{/each}
@@ -198,4 +217,15 @@
 			</div>
 		</div>
 	{/if}
+
+	<form bind:this={deleteForm} method="POST" action="?/eliminar" use:enhance style="display: none;">
+		<input type="hidden" name="id" value={pendingDeleteId ?? ''} />
+	</form>
+
+	<ConfirmModal
+		open={deleteModalOpen}
+		message="¿Eliminar turno? Esta acción no se puede deshacer."
+		onConfirm={confirmDelete}
+		onCancel={cancelDelete}
+	/>
 </div>

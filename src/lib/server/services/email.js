@@ -106,6 +106,58 @@ export async function notifyClientBookingConfirmed({ email, clientName, barberNa
 }
 
 /**
+ * @param {{ email: string; clientName: string; date: string; time: string; service: string }} params
+ */
+export async function notifyBarberBookingCancelled({ email, clientName, date, time, service }) {
+	if (!env.RESEND_API_KEY || !env.EMAIL_FROM) {
+		console.warn('Correo no configurado: falta RESEND_API_KEY o EMAIL_FROM');
+		console.log(`[DEV] Email de cancelación para barbero ${email}: Cliente ${clientName} canceló turno ${date} ${time} (${service})`);
+		return false;
+	}
+
+	const recipient = env.EMAIL_TEST_RECIPIENT || email;
+	if (!recipient) {
+		console.warn('No se pudo enviar el correo: el email del barbero está vacío');
+		return false;
+	}
+
+	const response = await fetch('https://api.resend.com/emails', {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${env.RESEND_API_KEY}`,
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			from: env.EMAIL_FROM,
+			to: [recipient],
+			subject: 'Turno cancelado por el cliente - 2bleh Barber',
+			text: `Hola,\n\nEl cliente ${clientName} ha cancelado su turno.\n\nFecha: ${date}\nHora: ${time}\nServicio: ${service}\nCliente: ${clientName}\n\nEl horario ha quedado liberado.\n\n— 2bleh Barber`,
+			html: `
+				<div style="font-family: 'Poppins', sans-serif; max-width: 560px; margin: auto; padding: 24px; border: 1px solid #eee; border-radius: 8px;">
+					<h2 style="margin: 0 0 8px;">Turno cancelado</h2>
+					<p>El cliente <strong>${clientName}</strong> ha <span style="color: #dc2626; font-weight: 700;">cancelado</span> su turno en <strong>2bleh Barber</strong>.</p>
+					<table style="width: 100%; margin: 16px 0; border-collapse: collapse;">
+						<tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Cliente</td><td style="padding: 8px 0; font-weight: 600; text-align: right;">${clientName}</td></tr>
+						<tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Fecha</td><td style="padding: 8px 0; font-weight: 600; text-align: right;">${date}</td></tr>
+						<tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Hora</td><td style="padding: 8px 0; font-weight: 600; text-align: right;">${time}</td></tr>
+						<tr><td style="padding: 8px 0; color: #666; font-size: 13px;">Servicio</td><td style="padding: 8px 0; font-weight: 600; text-align: right;">${service}</td></tr>
+					</table>
+					<p style="font-size: 13px; color: #666;">El horario ha quedado <strong>liberado</strong> y ya está disponible para nuevas reservas.</p>
+					<hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;" />
+					<p style="font-size: 12px; color: #999;">Este es un mensaje automático, por favor no respondas a este correo.</p>
+				</div>
+			`
+		})
+	});
+
+	if (!response.ok) {
+		console.error('No se pudo enviar el email de cancelación al barbero', await response.text());
+		return false;
+	}
+	return true;
+}
+
+/**
  * @param {{ email: string; name: string; token: string; origin: string }} params
  */
 export async function sendPasswordResetEmail({ email, name, token, origin }) {
