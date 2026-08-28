@@ -1,6 +1,6 @@
 <script>
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/2bleh-logo.png';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import { onNavigate } from '$app/navigation';
 

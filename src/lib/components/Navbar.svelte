@@ -6,7 +6,22 @@
 
 <nav class="navbar rounded-lg border-b border-base-300 bg-base-100">
 	<div class="navbar-start">
-		<a href={resolve('/')} class="btn btn-ghost text-lg font-bold sm:text-xl">2bleh Barber</a>
+		<a
+			href={resolve('/')}
+			class="btn btn-ghost flex h-auto flex-col items-center justify-center gap-0 px-2 py-1 leading-none"
+			aria-label="2BLEH BARBER - Inicio"
+		>
+			<span
+				class="text-[30px] leading-none tracking-tight sm:text-[34px]"
+				style="font-family: 'Kaushan Script', cursive; font-weight: 400;"
+				>2'BLEH</span
+			>
+			<span
+				class="text-[9px] font-semibold tracking-[0.45em] opacity-80 sm:text-[10px]"
+				style="font-family: 'Poppins', sans-serif;"
+				>BARBER</span
+			>
+		</a>
 	</div>
 	<div class="navbar-center">
 		<ul class="menu menu-horizontal hidden gap-1 px-1 sm:gap-2 md:flex">
