@@ -3,6 +3,7 @@ import { getUser, updateUser } from '$lib/server/services/users';
 import { verifyPassword, hashPassword } from '$lib/server/auth/password.js';
 import { deleteUserSessions } from '$lib/server/auth/session.js';
 import { SESSION_COOKIE } from '$lib/server/auth/session.js';
+import { validateParaguayPhone } from '$lib/validation.js';
 
 export async function load({ locals }) {
 	if (!locals.user || locals.user.role !== 'barbero') throw redirect(303, '/login');
@@ -20,7 +21,11 @@ export const actions = {
 		const notifications = data.get('notifications') === 'on';
 		const updates = {};
 		if (name) updates.name = String(name);
-		if (phone) updates.phone = String(phone);
+		if (phone) {
+			const check = validateParaguayPhone(String(phone));
+			if (!check.valid) return { error: check.error };
+			updates.phone = check.normalized ?? String(phone);
+		}
 		if (avatar) updates.avatar = String(avatar);
 		updates.notifications = notifications;
 		await updateUser(locals.user.id, updates);

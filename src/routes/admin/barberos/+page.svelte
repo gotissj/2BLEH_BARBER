@@ -1,11 +1,22 @@
 <script>
 	import { enhance } from '$app/forms';
+	import { truncateParaguayPhoneInput } from '$lib/validation.js';
 
 	let { data, form } = $props();
 	let editingId = $state(/** @type {string | null} */ (null));
 	let editData = $state({ name: '', email: '', phone: '', password: '' });
 
-	/** @param {{ id: string; name: string; email: string; phone: string }} b */
+	/** @param {Event} e */
+	function onPhoneInput(e) {
+		const t = /** @type {HTMLInputElement} */ (e.currentTarget);
+		const digits = t.value.replace(/\D/g, '');
+		let max = 9;
+		if (digits.startsWith('595')) max = 12;
+		else if (digits.startsWith('0')) max = 10;
+		if (digits.length > max) t.value = truncateParaguayPhoneInput(t.value);
+	}
+
+	/** @param {{ id: string, name: string, email: string, phone: string }} b */
 	function startEdit(b) {
 		editData = { name: b.name, email: b.email, phone: b.phone, password: '' };
 		editingId = b.id;
@@ -77,6 +88,10 @@
 						required
 						class="input-bordered input w-full"
 						placeholder="0985123498"
+						inputmode="numeric"
+						maxlength="15"
+						title="Formato PY: 0981123456 (10 dígitos) o 981123456 (9 dígitos) o +595981123456"
+						oninput={onPhoneInput}
 					/>
 				</div>
 				<div class="form-control">
@@ -162,6 +177,9 @@
 												bind:value={editData.phone}
 												class="input-bordered input w-full input-sm"
 												aria-label="Teléfono"
+												inputmode="numeric"
+												maxlength="15"
+												oninput={onPhoneInput}
 											/>
 											<input
 												type="password"

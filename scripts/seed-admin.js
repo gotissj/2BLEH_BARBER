@@ -6,6 +6,7 @@ const ADMIN_NAME = process.env.ADMIN_NAME;
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_AUTH_TOKEN = process.env.DATABASE_AUTH_TOKEN;
 
 if (!ADMIN_NAME || !ADMIN_EMAIL || !ADMIN_PASSWORD) {
 	console.error('Faltan variables de entorno: ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD');
@@ -16,7 +17,10 @@ if (!DATABASE_URL) {
 	process.exit(1);
 }
 
-const client = createClient({ url: DATABASE_URL });
+const client = createClient({
+	url: DATABASE_URL,
+	authToken: DATABASE_AUTH_TOKEN
+});
 
 async function main() {
 	try {

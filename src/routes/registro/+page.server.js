@@ -3,6 +3,7 @@ import { findUserByEmail, createUser } from '$lib/server/services/users';
 import { hashPassword } from '$lib/server/auth/password';
 import { createSession, SESSION_COOKIE } from '$lib/server/auth/session';
 import { roleHome } from '$lib/server/services/users';
+import { validateParaguayPhone } from '$lib/validation.js';
 
 export const load = async ({ locals }) => {
 	if (locals.user) throw redirect(303, roleHome(locals.user.role));
@@ -30,6 +31,11 @@ export const actions = {
 			});
 		}
 
+		const phoneCheck = validateParaguayPhone(phone);
+		if (!phoneCheck.valid) {
+			return fail(400, { error: phoneCheck.error, name, email, phone });
+		}
+
 		const existing = await findUserByEmail(email);
 		if (existing) {
 			return fail(400, { error: 'Ya existe una cuenta con ese email', name, email, phone });
@@ -38,7 +44,7 @@ export const actions = {
 		const newUser = await createUser({
 			name,
 			email,
-			phone,
+			phone: phoneCheck.normalized ?? phone,
 			passwordHash: hashPassword(password),
 			role: 'cliente'
 		});

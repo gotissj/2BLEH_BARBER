@@ -1,8 +1,21 @@
 <script>
 	import { resolve } from '$app/paths';
 	import { enhance } from '$app/forms';
+	import { truncateParaguayPhoneInput } from '$lib/validation.js';
 
 	let { form } = $props();
+
+	/** @param {Event} e */
+	function onPhoneInput(e) {
+		const t = /** @type {HTMLInputElement} */ (e.currentTarget);
+		const digits = t.value.replace(/\D/g, '');
+		let max = 9;
+		if (digits.startsWith('595')) max = 12;
+		else if (digits.startsWith('0')) max = 10;
+		if (digits.length > max) {
+			t.value = truncateParaguayPhoneInput(t.value);
+		}
+	}
 </script>
 
 <div class="card-mobile">
@@ -67,6 +80,10 @@
 					required
 					class="input-bordered input w-full"
 					placeholder="0985123498"
+					inputmode="numeric"
+					maxlength="15"
+					title="Formato PY: 0981123456 (10 dígitos) o 981123456 (9 dígitos) o +595981123456"
+					oninput={onPhoneInput}
 				/>
 			</div>
 			<div class="form-control">

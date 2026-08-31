@@ -9,6 +9,7 @@ import {
 import { hashPassword } from '$lib/server/auth/password';
 import { deleteBarberBookings } from '$lib/server/services/bookings';
 import { deleteUserSessions } from '$lib/server/auth/session';
+import { validateParaguayPhone } from '$lib/validation.js';
 
 export async function load({ locals }) {
 	if (!locals.user || locals.user.role !== 'admin') throw redirect(303, '/login');
@@ -38,12 +39,23 @@ export const actions = {
 			});
 		}
 
+		const phoneCheck = validateParaguayPhone(phone);
+		if (!phoneCheck.valid) {
+			return fail(400, { error: phoneCheck.error, name, email, phone });
+		}
+
 		const existing = await findUserByEmail(email);
 		if (existing) {
 			return fail(400, { error: 'Ya existe una cuenta con ese email', name, email, phone });
 		}
 
-		await createUser({ name, email, phone, passwordHash: hashPassword(password), role: 'barbero' });
+		await createUser({
+			name,
+			email,
+			phone: phoneCheck.normalized ?? phone,
+			passwordHash: hashPassword(password),
+			role: 'barbero'
+		});
 		throw redirect(303, '/admin/barberos');
 	},
 
@@ -71,13 +83,18 @@ export const actions = {
 			});
 		}
 
+		const phoneCheck2 = validateParaguayPhone(phone);
+		if (!phoneCheck2.valid) {
+			return fail(400, { error: phoneCheck2.error, name, email, phone });
+		}
+
 		const existing = await findUserByEmail(email);
 		if (existing && existing.id !== id) {
 			return fail(400, { error: 'Ya existe otra cuenta con ese email', name, email, phone });
 		}
 
 		/** @type {Partial<{ name: string; email: string; phone: string; passwordHash: string }>} */
-		const updates = { name, email, phone };
+		const updates = { name, email, phone: phoneCheck2.normalized ?? phone };
 		if (password) updates.passwordHash = hashPassword(password);
 		await updateUser(id, updates);
 		throw redirect(303, '/admin/barberos');
