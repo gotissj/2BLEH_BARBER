@@ -6,6 +6,12 @@ Sistema de gestión de reservas y citas para barbería, desarrollado con tecnolo
 [![Database: Turso/LibSQL](https://img.shields.io/badge/Database-Turso%2FLibSQL-0066cc?style=flat-square)](https://turso.tech/)
 [![ORM: Drizzle](https://img.shields.io/badge/ORM-Drizzle-C5622B?style=flat-square)](https://orm.drizzle.team/)
 
+## 🌐 Aplicación en Vivo
+
+🔗 **[https://2blehbarber.vercel.app/](https://2blehbarber.vercel.app/)**
+
+Accede a la aplicación en producción alojada en Vercel.
+
 ## Tabla de Contenidos
 
 - [Características](#características)
